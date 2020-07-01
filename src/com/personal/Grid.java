@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Grid {
-    private final int ROAD_EXT_PERCENT = 50;
+    private final int ROAD_EXT_PERCENT = 80;
 
     private int size_x, size_y;
     public ArrayList< ArrayList<Lot> > map;
@@ -55,8 +55,8 @@ public class Grid {
         return eli;
     }
 
-    public ArrayList<Lot> getEligibleRoads(){
-        ArrayList<Lot> eli = new ArrayList<Lot>();
+    public ArrayList<Road> getEligibleRoads(){
+        ArrayList<Road> eli = new ArrayList<Road>();
         for(int i=0; i<map.size(); i++) {
             for (int j = 0; j < map.get(0).size(); j++) {
                 Lot l = map.get(i).get(j);
@@ -81,7 +81,7 @@ public class Grid {
             //System.out.println(x+","+y);
             try{
                 for(int i=1; map.get(x+i).get(y).getType() == Lot.EMPTY;i++){
-                    if(r.nextInt(100/ROAD_EXT_PERCENT) == 0){
+                    if(r.nextInt(100) < ROAD_EXT_PERCENT){
                         Road ro = new Road(map.get(x+i).get(y));
                         if(map.get(x+i).get(y) instanceof Road)
                             ro = (Road)map.get(x+i).get(y);
@@ -95,7 +95,7 @@ public class Grid {
             }catch(Exception e){}
             try{
                 for(int i=-1; map.get(x+i).get(y).getType() == Lot.EMPTY;i--){
-                    if(r.nextInt(100/ROAD_EXT_PERCENT) == 0){
+                    if(r.nextInt(100) < ROAD_EXT_PERCENT){
                         Road ro = new Road(map.get(x+i).get(y));
                         if(map.get(x+i).get(y) instanceof Road)
                             ro = (Road)map.get(x+i).get(y);
@@ -110,7 +110,7 @@ public class Grid {
         }else{
             try{
                 for(int i=1; map.get(x).get(y+i).getType() == Lot.EMPTY;i++){
-                    if(r.nextInt(100/ROAD_EXT_PERCENT) == 0){
+                    if(r.nextInt(100) < ROAD_EXT_PERCENT){
                         Road ro = new Road(map.get(x).get(y+i));
                         if(map.get(x).get(y+i) instanceof Road)
                             ro = (Road)map.get(x).get(y+i);
@@ -124,7 +124,7 @@ public class Grid {
             }catch(Exception e){}
             try{
                 for(int i=-1; map.get(x).get(y+i).getType() == Lot.EMPTY;i--){
-                    if(r.nextInt(100/ROAD_EXT_PERCENT) == 0){
+                    if(r.nextInt(100) < ROAD_EXT_PERCENT){
                         Road ro = new Road(map.get(x).get(y+i));
                         if(map.get(x).get(y+i) instanceof Road)
                             ro = (Road)map.get(x).get(y+i);
@@ -141,6 +141,41 @@ public class Grid {
 
     public void plopBuilding(Lot l){
         map.get(l.getCoor_x()).set(l.getCoor_y(), l);
+    }
+
+    private boolean adjacentRoads(Road r){
+        if(r.getDir() == Road.VER){
+            try {
+                if (map.get(r.getCoor_x()).get(r.coor_y+1).getType() == Lot.ROAD ||
+                        map.get(r.getCoor_x()).get(r.coor_y-1).getType() == Lot.ROAD)
+                    return false;
+            }catch(Exception e){}
+        }else{
+            try {
+                if (map.get(r.getCoor_x()+1).get(r.coor_y).getType() == Lot.ROAD ||
+                        map.get(r.getCoor_x()-1).get(r.coor_y).getType() == Lot.ROAD)
+                    return false;
+            }catch(Exception e){}
+        }
+        return true;
+    }
+
+    public int getNeighbours(Lot l){
+        int count = 0;
+
+        try{if(map.get(l.getCoor_x()+1).get(l.coor_y).getType() == Lot.BUILDING)
+            count++;}catch(Exception e){}
+
+        try{if(map.get(l.getCoor_x()-1).get(l.coor_y).getType() == Lot.BUILDING)
+            count++;}catch(Exception e){}
+
+        try{if(map.get(l.getCoor_x()).get(l.coor_y+1).getType() == Lot.BUILDING)
+            count++;}catch(Exception e){}
+
+        try{if(map.get(l.getCoor_x()).get(l.coor_y-1).getType() == Lot.BUILDING)
+            count++;}catch(Exception e){}
+
+        return count;
     }
 
     @Override
@@ -160,22 +195,5 @@ public class Grid {
         }
 
         return s;
-    }
-
-    private boolean adjacentRoads(Road r){
-        if(r.getDir() == Road.VER){
-            try {
-                if (map.get(r.getCoor_x()).get(r.coor_y+1).getType() == Lot.ROAD ||
-                    map.get(r.getCoor_x()).get(r.coor_y-1).getType() == Lot.ROAD)
-                    return false;
-            }catch(Exception e){}
-        }else{
-            try {
-                if (map.get(r.getCoor_x()+1).get(r.coor_y).getType() == Lot.ROAD ||
-                    map.get(r.getCoor_x()-1).get(r.coor_y).getType() == Lot.ROAD)
-                    return false;
-            }catch(Exception e){}
-        }
-        return true;
     }
 }
