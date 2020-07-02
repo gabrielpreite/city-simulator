@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Grid {
-    private final int ROAD_EXT_PERCENT = 80;
+    private final int ROAD_EXT_PERCENT = 90;
 
     private int size_x, size_y;
     public ArrayList< ArrayList<Lot> > map;
@@ -80,8 +80,11 @@ public class Grid {
             //System.out.println(map.get(x).get(y+1).getType());
             //System.out.println(x+","+y);
             try{
-                for(int i=1; map.get(x+i).get(y).getType() == Lot.EMPTY;i++){
-                    if(r.nextInt(100) < ROAD_EXT_PERCENT){
+                for(int i=1;;i++){
+                    int div = 1;
+                    if(map.get(x+i).get(y).getType() == Lot.BUILDING)
+                            div = 2;
+                    if(r.nextInt(100) < ROAD_EXT_PERCENT/div){
                         Road ro = new Road(map.get(x+i).get(y));
                         if(map.get(x+i).get(y) instanceof Road)
                             ro = (Road)map.get(x+i).get(y);
@@ -95,7 +98,10 @@ public class Grid {
             }catch(Exception e){}
             try{
                 for(int i=-1; map.get(x+i).get(y).getType() == Lot.EMPTY;i--){
-                    if(r.nextInt(100) < ROAD_EXT_PERCENT){
+                    int div = 1;
+                    if(map.get(x+i).get(y).getType() == Lot.BUILDING)
+                        div = 2;
+                    if(r.nextInt(100) < ROAD_EXT_PERCENT/div){
                         Road ro = new Road(map.get(x+i).get(y));
                         if(map.get(x+i).get(y) instanceof Road)
                             ro = (Road)map.get(x+i).get(y);
@@ -110,7 +116,10 @@ public class Grid {
         }else{
             try{
                 for(int i=1; map.get(x).get(y+i).getType() == Lot.EMPTY;i++){
-                    if(r.nextInt(100) < ROAD_EXT_PERCENT){
+                    int div = 1;
+                    if(map.get(x+i).get(y).getType() == Lot.BUILDING)
+                        div = 2;
+                    if(r.nextInt(100) < ROAD_EXT_PERCENT/div){
                         Road ro = new Road(map.get(x).get(y+i));
                         if(map.get(x).get(y+i) instanceof Road)
                             ro = (Road)map.get(x).get(y+i);
@@ -124,7 +133,10 @@ public class Grid {
             }catch(Exception e){}
             try{
                 for(int i=-1; map.get(x).get(y+i).getType() == Lot.EMPTY;i--){
-                    if(r.nextInt(100) < ROAD_EXT_PERCENT){
+                    int div = 1;
+                    if(map.get(x+i).get(y).getType() == Lot.BUILDING)
+                        div = 2;
+                    if(r.nextInt(100) < ROAD_EXT_PERCENT/div){
                         Road ro = new Road(map.get(x).get(y+i));
                         if(map.get(x).get(y+i) instanceof Road)
                             ro = (Road)map.get(x).get(y+i);
@@ -178,6 +190,10 @@ public class Grid {
         return count;
     }
 
+    public Lot getLot(int i, int j){
+        return map.get(i).get(j);
+    }
+
     @Override
     public String toString(){
         String s = "";
@@ -193,7 +209,6 @@ public class Grid {
             }
             s+="\n";
         }
-
         return s;
     }
 }

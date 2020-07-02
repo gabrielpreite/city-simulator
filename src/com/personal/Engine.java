@@ -4,21 +4,22 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Engine {
-    private final int SIZE_X = 20;
-    private final int SIZE_Y = 20;
-    private final int BUILD_PERCENT = 15;
-    private final int ROAD_PERCENT = 5;
+    private final int SIZE_X = 50;
+    private final int SIZE_Y = 50;
+    private final int BUILD_PERCENT = 14;
+    private final int ROAD_PERCENT = 3;
 
     private Grid grid;
-    //privte Gui gui;
+    private Gui gui;
 
     public Engine(){
         grid = new Grid(SIZE_X, SIZE_Y);
         Random rand = new Random();
-
-        //gui = new Gui(grid);
+        gui = new Gui(SIZE_X, SIZE_Y);
 
         while(true){
+            gui.refresh(grid);
+
             try{
                 Thread.sleep(10);
             }catch(InterruptedException e){
@@ -40,7 +41,7 @@ public class Engine {
             ArrayList<Lot> buildings = grid.getEligibleBuildings();
             /*for(Lot tmp : buildings)
                 System.out.println(tmp.toString());*/
-            if(buildings.size()>0){
+            if(buildings.size()>SIZE_X/3){
                 Lot selB = buildings.get(rand.nextInt(buildings.size()));
                 int bonus = grid.getNeighbours(selB);
                 if(rand.nextInt(100) < BUILD_PERCENT*(bonus+1)){
@@ -49,7 +50,7 @@ public class Engine {
                 }
             }
 
-            System.out.println(grid.toString());
+            //System.out.println(grid.toString());
         }
     }
 
