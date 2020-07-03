@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Engine {
-    private final int SIZE_X = 50;
-    private final int SIZE_Y = 50;
+    private final int SIZE_X = 100;
+    private final int SIZE_Y = 100;
     private final int BUILD_PERCENT = 14;
     private final int ROAD_PERCENT = 3;
 
@@ -41,7 +41,7 @@ public class Engine {
             ArrayList<Lot> buildings = grid.getEligibleBuildings();
             /*for(Lot tmp : buildings)
                 System.out.println(tmp.toString());*/
-            if(buildings.size()>SIZE_X/3){
+            if(buildings.size()>0){
                 Lot selB = buildings.get(rand.nextInt(buildings.size()));
                 int bonus = grid.getNeighbours(selB);
                 if(rand.nextInt(100) < BUILD_PERCENT*(bonus+1)){
