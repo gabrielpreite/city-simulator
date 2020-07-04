@@ -11,11 +11,13 @@ public class Engine {
 
     private Grid grid;
     private Gui gui;
+    private DBInterface db;
 
     public Engine(){
         grid = new Grid(SIZE_X, SIZE_Y);
         Random rand = new Random();
         gui = new Gui(SIZE_X, SIZE_Y);
+        db = DBInterface.getInstance();
 
         while(true){
             gui.refresh(grid);
