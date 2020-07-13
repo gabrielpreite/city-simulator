@@ -4,15 +4,20 @@ public class Lot {
     static final int EMPTY = 0;
     static final int BUILDING = 1;
     static final int ROAD = 2;
+    static final int ROADSIDE = 3;
 
+    protected int id;
     protected int coor_x, coor_y;
-    protected int type;
+    protected int type_lo;
 
-    public Lot(int coor_x, int coor_y) {
+    public Lot(int id, int coor_x, int coor_y, int type_lo) {
+        this.id = id;
         this.coor_x = coor_x;
         this.coor_y = coor_y;
-        this.type = EMPTY;
+        this.type_lo = type_lo;
     }
+
+    public int getId() { return id; }
 
     public int getCoor_x() {
         return coor_x;
@@ -22,12 +27,12 @@ public class Lot {
         return coor_y;
     }
 
-    public int getType() {
-        return type;
+    public int getType_lo() {
+        return type_lo;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setType_lo(int type_lo) {
+        this.type_lo = type_lo;
     }
 
     @Override
@@ -35,7 +40,7 @@ public class Lot {
         return "Lot{" +
                 "coor_x=" + coor_x +
                 ", coor_y=" + coor_y +
-                ", type=" + type +
+                ", type=" + type_lo +
                 '}';
     }
 }

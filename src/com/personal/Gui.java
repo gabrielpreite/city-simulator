@@ -7,7 +7,10 @@ import java.util.ArrayList;
 public class Gui {
     private final Color COL_EMPTY = Color.GREEN;
     private final Color COL_ROAD = Color.GRAY;
-    private final Color COL_BUILDING = Color.WHITE;
+    private final Color COL_HOUSE = Color.WHITE;
+    private final Color COL_SCHOOL = Color.BLUE;
+    private final Color COL_LEISURE = Color.YELLOW;
+
     private final int FRAME_X = 800;
     private final int FRAME_Y = 800;
 
@@ -15,6 +18,7 @@ public class Gui {
     private int size_y;
     private JFrame f;
     private ArrayList< ArrayList<JButton> > buttons;
+    private DBInterface db = DBInterface.getInstance();
 
     public Gui(int size_x, int size_y){
         this.size_x = size_x;
@@ -42,14 +46,33 @@ public class Gui {
         f.setVisible(true);
     }
 
-    public void refresh(Grid grid){
+    public void refresh(){
         for(int i=0; i<size_x; i++){
             for(int j=0; j<size_y; j++){
-                switch(grid.getLot(i, j).getType()){
-                    case Lot.EMPTY: buttons.get(i).get(j).setBackground(COL_EMPTY); break;
-                    case Lot.BUILDING: buttons.get(i).get(j).setBackground(COL_BUILDING); break;
-                    case Lot.ROAD: buttons.get(i).get(j).setBackground(COL_ROAD); break;
-
+                Lot l = db.getLot(i, j);
+                switch(l.getType_lo()){
+                    case Lot.EMPTY:
+                        buttons.get(i).get(j).setBackground(COL_EMPTY);
+                        break;
+                    case Lot.ROAD:
+                        buttons.get(i).get(j).setBackground(COL_ROAD);
+                        break;
+                    case Lot.BUILDING:
+                        if(l instanceof Building){
+                            Building b = (Building)l;
+                            switch(b.getType_bu()){
+                                case Building.HOUSE:
+                                    buttons.get(i).get(j).setBackground(COL_HOUSE);
+                                    break;
+                                case Building.SCHOOL:
+                                    buttons.get(i).get(j).setBackground(COL_SCHOOL);
+                                    break;
+                                case Building.LEISURE:
+                                    buttons.get(i).get(j).setBackground(COL_LEISURE);
+                                    break;
+                            }
+                        }
+                        break;
                 }
             }
         }

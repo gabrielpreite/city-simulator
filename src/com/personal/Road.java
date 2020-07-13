@@ -7,14 +7,9 @@ public class Road extends Lot{
 
     private int dir;
 
-    public Road(Lot l){
-        super(l.coor_x, l.coor_y);
-    }
-
-    public Road(int coor_x, int coor_y, int dir){
-        super(coor_x, coor_y);
+    public Road(Lot l, int dir){
+        super(l.id, l.coor_x, l.coor_y, Lot.ROAD);
         this.dir = dir;
-        this.type = Lot.ROAD;
     }
 
     public int getDir() {
@@ -29,9 +24,10 @@ public class Road extends Lot{
     public String toString() {
         return "Road{" +
                 "dir=" + dir +
+                ", id=" + id +
                 ", coor_x=" + coor_x +
                 ", coor_y=" + coor_y +
-                ", type=" + type +
+                ", type_lo=" + type_lo +
                 "} " + super.toString();
     }
 }
