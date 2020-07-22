@@ -6,7 +6,7 @@ import java.util.Random;
 public class Engine {
     private final int SIZE_X = 100;
     private final int SIZE_Y = 100;
-    private final int BUILD_PERCENT = 10;
+    private final int BUILD_PERCENT = 0;//todo restore build percent
     private final int ROAD_PERCENT = 100;
     private final int ROAD_EXT_PERCENT = 90;
 
@@ -15,8 +15,8 @@ public class Engine {
     private DBInterface db = DBInterface.getInstance();
 
     public Engine(){
-        db.size_x = SIZE_X;
-        db.size_y = SIZE_Y;
+        DBInterface.size_x = SIZE_X;
+        DBInterface.size_y = SIZE_Y;
         grid = new Grid(SIZE_X, SIZE_Y);
         Random rand = new Random();
         gui = new Gui(SIZE_X, SIZE_Y);
@@ -50,25 +50,43 @@ public class Engine {
 
                     int mod_x = dir == Road.HOR ? 1 : 0;
                     int mod_y = dir == Road.VER ? 1 : 0;
+                    //todo bug: fix adjacent roads and collisions
                     for(int i=1; ; i++){
                         end_x = selR.getCoor_x() + i*mod_x;
                         end_y = selR.getCoor_y() + i*mod_y;
                         Lot l1 = db.getLot(end_x+mod_y, end_y+mod_x);
                         Lot l2 = db.getLot(end_x-mod_y, end_y-mod_x);
-                        System.out.println("ad");
-                        if(rand.nextInt(100) >= ROAD_EXT_PERCENT || l1.getType_lo() == Lot.ROAD || l2.getType_lo() == Lot.ROAD)
+                        Lot l3 = db.getLot(end_x+mod_x, end_y+mod_y);
+                        if(rand.nextInt(100) > ROAD_EXT_PERCENT || l1.getType_lo() == Lot.ROAD || l2.getType_lo() == Lot.ROAD || l3.getType_lo() > 1){
+                            System.out.println("found match at:"+l1.getCoor_x()+", "+l1.getCoor_y()+" or:"+l2.getCoor_x()+", "+l2.getCoor_y());
+                            System.out.println(l1.toString());
+                            System.out.println(l2.toString());
+                            end_x -= mod_x;
+                            end_y -= mod_y;
+                            System.out.println("reverted to:"+end_x+", "+end_y);
+                            System.out.println("break");
                             break;
+                        }
                     }
-                    for(int i=-1; ; i--){
-                        start_x = selR.getCoor_x() + i*mod_x;
-                        start_y = selR.getCoor_y() + i*mod_y;
+                    for(int i=-1; ; i--) {
+                        start_x = selR.getCoor_x() + i * mod_x;
+                        start_y = selR.getCoor_y() + i * mod_y;
 
-                        Lot l1 = db.getLot(start_x+mod_y, start_y+mod_x);
-                        Lot l2 = db.getLot(start_x-mod_y, start_y-mod_x);
-                        if(rand.nextInt(100) >= ROAD_EXT_PERCENT || l1.getType_lo() == Lot.ROAD || l2.getType_lo() == Lot.ROAD)
+                        Lot l1 = db.getLot(start_x + mod_y, start_y + mod_x);
+                        Lot l2 = db.getLot(start_x - mod_y, start_y - mod_x);
+                        Lot l3 = db.getLot(end_x+mod_x, end_y+mod_y);
+                        if (rand.nextInt(100) > ROAD_EXT_PERCENT || l1.getType_lo() == Lot.ROAD || l2.getType_lo() == Lot.ROAD || l3.getType_lo() > 1){
+                            System.out.println("found match at:"+l1.getCoor_x()+", "+l1.getCoor_y()+" or:"+l2.getCoor_x()+", "+l2.getCoor_y());
+                            System.out.println(l1.toString());
+                            System.out.println(l2.toString());
+                            end_x += mod_x;
+                            end_y += mod_y;
+                            System.out.println("reverted to:"+end_x+", "+end_y);
+                            System.out.println("break");
                             break;
+                        }
                     }
-
+                    System.out.println("startx:"+start_x+",endx:"+end_x+",starty:"+start_y+",endy:"+end_y+",dir:"+dir+",centerx:"+center_x+",centery:"+center_y);
                     db.addRoad(start_x, end_x, start_y, end_y, dir, center_x, center_y);
                 }
             }

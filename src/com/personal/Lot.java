@@ -2,9 +2,9 @@ package com.personal;
 
 public class Lot {
     static final int EMPTY = 0;
-    static final int BUILDING = 1;
+    static final int ROADSIDE = 1;
     static final int ROAD = 2;
-    static final int ROADSIDE = 3;
+    static final int BUILDING = 3;
 
     protected int id;
     protected int coor_x, coor_y;
@@ -38,9 +38,10 @@ public class Lot {
     @Override
     public String toString() {
         return "Lot{" +
-                "coor_x=" + coor_x +
+                "id=" + id +
+                ", coor_x=" + coor_x +
                 ", coor_y=" + coor_y +
-                ", type=" + type_lo +
+                ", type_lo=" + type_lo +
                 '}';
     }
 }

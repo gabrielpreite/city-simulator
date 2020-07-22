@@ -20,7 +20,7 @@ public class DBInterface {
     private DBInterface(){
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/city?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "");
+            connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/city?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "root");
             statement = connect.createStatement();
             statement.executeUpdate("use city;");
             statement.executeUpdate("delete from road where id_roa>0;");
@@ -112,20 +112,26 @@ public class DBInterface {
 
     public void addRoad(int start_x, int end_x, int start_y, int end_y, int dir, int center_x, int center_y){
         try{
-            preparedStatement = connect.prepareStatement("update lot set type_lo = ? where coor_x between ? and ? and coor_y between ? and ?");
+            //sets as roadside type all the adjacent lots, including the corners
+            preparedStatement = connect.prepareStatement("update lot set type_lo = ? where (coor_x between ? and ?) and (coor_y between ? and ?) and type_lo = ?");
             preparedStatement.setInt(1, Lot.ROADSIDE);
             preparedStatement.setInt(2, Math.min(start_x, end_x)-1);
             preparedStatement.setInt(3, Math.max(start_x, end_x)+1);
             preparedStatement.setInt(4, Math.min(start_y, end_y)-1);
             preparedStatement.setInt(5, Math.max(start_y, end_y)+1);
+            preparedStatement.setInt(6, Lot.EMPTY);
             preparedStatement.executeUpdate();
 
-            statement.executeUpdate("update lot set type_lo = " + Lot.EMPTY + " where coor_x = " + (Math.min(start_x, end_x)-1) + " and coor_y = " + (Math.min(start_y, end_y)-1));
-            statement.executeUpdate("update lot set type_lo = " + Lot.EMPTY + " where coor_x = " + (Math.max(start_x, end_x)+1) + " and coor_y = " + (Math.min(start_y, end_y)-1));
-            statement.executeUpdate("update lot set type_lo = " + Lot.EMPTY + " where coor_x = " + (Math.min(start_x, end_x)-1) + " and coor_y = " + (Math.max(start_y, end_y)+1));
-            statement.executeUpdate("update lot set type_lo = " + Lot.EMPTY + " where coor_x = " + (Math.max(start_x, end_x)+1) + " and coor_y = " + (Math.max(start_y, end_y)+1));
+            //sets as empty the corners
+            //TEMPFIXtodo bug: setting roadside corners as empty could erase roadside lots from other roads
+            /*statement.executeUpdate("update lot set type_lo = " + Lot.EMPTY + " where coor_x = " + (Math.min(start_x, end_x)-1) + " and coor_y = " + (Math.min(start_y, end_y)-1) + " and type_lo = " + Lot.ROADSIDE);
+            statement.executeUpdate("update lot set type_lo = " + Lot.EMPTY + " where coor_x = " + (Math.max(start_x, end_x)+1) + " and coor_y = " + (Math.min(start_y, end_y)-1) + " and type_lo = " + Lot.ROADSIDE);
+            statement.executeUpdate("update lot set type_lo = " + Lot.EMPTY + " where coor_x = " + (Math.min(start_x, end_x)-1) + " and coor_y = " + (Math.max(start_y, end_y)+1) + " and type_lo = " + Lot.ROADSIDE);
+            statement.executeUpdate("update lot set type_lo = " + Lot.EMPTY + " where coor_x = " + (Math.max(start_x, end_x)+1) + " and coor_y = " + (Math.max(start_y, end_y)+1) + " and type_lo = " + Lot.ROADSIDE);
+            */
 
-            preparedStatement = connect.prepareStatement("update lot set type_lo = ? where coor_x between ? and ? and coor_y between ? and ?");
+            //sets as road the lots between the requested coordinates
+            preparedStatement = connect.prepareStatement("update lot set type_lo = ? where (coor_x between ? and ?) and (coor_y between ? and ?)");
             preparedStatement.setInt(1, Lot.ROAD);
             preparedStatement.setInt(2, Math.min(start_x, end_x));
             preparedStatement.setInt(3, Math.max(start_x, end_x));
@@ -133,31 +139,57 @@ public class DBInterface {
             preparedStatement.setInt(5, Math.max(start_y, end_y));
             preparedStatement.executeUpdate();
 
+            //deletes the road entry from the center of the new road, removing the duplicate
             statement.executeUpdate("delete from road where id_roa = " + center_x*size_x+size_y+1);
 
+            //adds the new road to the road table
             if(dir == Road.HOR){
                 for(int i=Math.min(start_x, end_x); i<=Math.max(start_x, end_x); i++){
-                    preparedStatement = connect.prepareStatement("insert into road values(?, ?)");
-                    preparedStatement.setInt(1, i*size_x+size_y+1);
-                    preparedStatement.setInt(2, Road.HOR);
-                    preparedStatement.executeUpdate();
+                    for(int j=Math.min(start_y, end_y); j<=Math.max(start_y, end_y); j++){
+                        resultSet = statement.executeQuery("select * from road where id_roa = " + (i*size_x+j+1));
+                        if(resultSet.next()){
+                            preparedStatement = connect.prepareStatement("update road set dir = ? where id_roa = ?");
+                            preparedStatement.setInt(1, Road.CRO);
+                            preparedStatement.setInt(2, resultSet.getInt("id_roa"));
+                            preparedStatement.executeUpdate();
+                        }else{
+                            preparedStatement = connect.prepareStatement("insert into road values(?, ?)");
+                            preparedStatement.setInt(1, i*size_x+j+1);
+                            preparedStatement.setInt(2, Road.HOR);
+                            preparedStatement.executeUpdate();
+                        }
+                    }
                 }
             }
             else{
                 for(int i=Math.min(start_y, end_y); i<=Math.max(start_y, end_y); i++){
-                    preparedStatement = connect.prepareStatement("insert into road values(?, ?)");
-                    preparedStatement.setInt(1, i*size_y+size_x+1);
-                    preparedStatement.setInt(2, Road.VER);
-                    preparedStatement.executeUpdate();
+                    for(int j=Math.min(start_x, end_x); j<=Math.max(start_x, end_x); j++){
+                        resultSet = statement.executeQuery("select * from road where id_roa = " + (j*size_x+i+1));
+                        if(resultSet.next()) {
+                            preparedStatement = connect.prepareStatement("update road set dir = ? where id_roa = ?");
+                            preparedStatement.setInt(1, Road.CRO);
+                            preparedStatement.setInt(2, resultSet.getInt("id_roa"));
+                            preparedStatement.executeUpdate();
+                        }else{
+                            preparedStatement = connect.prepareStatement("insert into road values(?, ?)");
+                            preparedStatement.setInt(1, j*size_x+i+1);
+                            preparedStatement.setInt(2, Road.VER);
+                            preparedStatement.executeUpdate();
+                        }
+                    }
                 }
             }
-            preparedStatement = connect.prepareStatement("update road set column dir = ? where id_roa = ?");
+
+            //sets as crossroad the center of the new road
+            preparedStatement = connect.prepareStatement("update road set dir = ? where id_roa = ?");
             preparedStatement.setInt(1, Road.CRO);
             preparedStatement.setInt(2, center_x*size_x+center_y+1);
+            preparedStatement.executeUpdate();
         }catch(Exception e){e.printStackTrace();}
     }
 
     public Lot getLot(int x, int y){
+        //todo bug: add out of bounds case
         Lot l = null;
         try{
             preparedStatement = connect.prepareStatement("select * from lot " +
@@ -189,7 +221,7 @@ public class DBInterface {
                             resultSet.getInt("workers"),
                             resultSet.getInt("salary"));
                     return b;
-            }
+            }//todo add other building types to switch
         }catch(Exception e) {
             e.printStackTrace();
         }finally{
