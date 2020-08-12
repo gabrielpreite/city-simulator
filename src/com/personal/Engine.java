@@ -1,20 +1,22 @@
 package com.personal;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Engine {
-    private final int SIZE_X = 100;
-    private final int SIZE_Y = 100;
-    private final int BUILD_PERCENT = 0;//todo restore build percent
-    private final int ROAD_PERCENT = 100;
-    private final int ROAD_EXT_PERCENT = 90;
+    private final Config conf = new Config();
+    private final int SIZE_X = conf.getsizex();
+    private final int SIZE_Y = conf.getsizey();
+    private final int BUILD_PERCENT = conf.getbuildp();//todo restore build percent
+    private final int ROAD_PERCENT = conf.getroadp();
+    private final int ROAD_EXT_PERCENT = conf.getroadextp();
 
     private Grid grid;
     private Gui gui;
     private DBInterface db = DBInterface.getInstance();
 
-    public Engine(){
+    public Engine() throws IOException {
         DBInterface.size_x = SIZE_X;
         DBInterface.size_y = SIZE_Y;
         grid = new Grid(SIZE_X, SIZE_Y);
@@ -107,7 +109,7 @@ public class Engine {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 	    new Engine();
     }
 }

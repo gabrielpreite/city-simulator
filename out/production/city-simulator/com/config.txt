@@ -1,0 +1,14 @@
+//Colors are case-sensitive, use allcaps only
+SIZE_X = 100
+SIZE_Y = 100
+BUILD_PERCENT = 0
+ROAD_PERCENT = 100
+ROAD_EXT_PERCENT = 90
+FRAME_X = 800
+FRAME_Y = 800
+//Color pool is the same as Color class
+COL_EMPTY = GREEN
+COL_ROAD = GRAY
+COL_HOUSE = WHITE
+COL_SCHOOL = BLUE
+COL_LEISURE = YELLOW

@@ -2,17 +2,19 @@ package com.personal;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Gui {
-    private final Color COL_EMPTY = Color.GREEN;
-    private final Color COL_ROAD = Color.GRAY;
-    private final Color COL_HOUSE = Color.WHITE;
-    private final Color COL_SCHOOL = Color.BLUE;
-    private final Color COL_LEISURE = Color.YELLOW;
+    private final Config conf = new Config();
+    private final Color COL_EMPTY = conf.getcol_empty();
+    private final Color COL_ROAD = conf.getcol_road();
+    private final Color COL_HOUSE = conf.getcol_house();
+    private final Color COL_SCHOOL = conf.getcol_school();
+    private final Color COL_LEISURE = conf.getcol_leisure();
 
-    private final int FRAME_X = 800;
-    private final int FRAME_Y = 800;
+    private final int FRAME_X = conf.getframex();
+    private final int FRAME_Y = conf.getframey();
 
     private int size_x;
     private int size_y;
@@ -20,7 +22,7 @@ public class Gui {
     private ArrayList< ArrayList<JButton> > buttons;
     private DBInterface db = DBInterface.getInstance();
 
-    public Gui(int size_x, int size_y){
+    public Gui(int size_x, int size_y) throws IOException {
         this.size_x = size_x;
         this.size_y = size_y;
 
