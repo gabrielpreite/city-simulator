@@ -16,7 +16,7 @@ public class Engine {
     private Gui gui;
     private DBInterface db = DBInterface.getInstance();
 
-    public Engine() throws IOException {
+    public Engine() {
         DBInterface.size_x = SIZE_X;
         DBInterface.size_y = SIZE_Y;
         grid = new Grid(SIZE_X, SIZE_Y);

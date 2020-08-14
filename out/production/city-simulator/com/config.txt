@@ -12,3 +12,4 @@ COL_ROAD = GRAY
 COL_HOUSE = WHITE
 COL_SCHOOL = BLUE
 COL_LEISURE = YELLOW
+//You can place a comment line anywhere in the file if needed

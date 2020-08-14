@@ -22,7 +22,7 @@ public class Gui {
     private ArrayList< ArrayList<JButton> > buttons;
     private DBInterface db = DBInterface.getInstance();
 
-    public Gui(int size_x, int size_y) throws IOException {
+    public Gui(int size_x, int size_y) {
         this.size_x = size_x;
         this.size_y = size_y;
 

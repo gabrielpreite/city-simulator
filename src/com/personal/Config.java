@@ -6,24 +6,28 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class Config {
-    String path = System.getProperty("user.dir");//gets current working path
-    File file = new File(path+"\\src\\com\\config.txt");
-    BufferedReader br = new BufferedReader(new FileReader(file));
-    String s;
-    StringTokenizer st;
-    ArrayList <Integer> params = new ArrayList<Integer>();
-    ArrayList <String> colors = new ArrayList<String>();
+    private final ArrayList <Integer> params = new ArrayList<Integer>();
+    private final ArrayList <String> colors = new ArrayList<String>();
 
-    public Config() throws IOException {
-        while ((s = br.readLine())!=null){
-            if(!(s.contains("//"))) { //checks for comment line, skips it if present
-                st = new StringTokenizer(s, "= ");
-                st.nextToken();//discards token preceding delim
-                if (params.size() < 7)
-                    params.add(Integer.parseInt(st.nextToken()));
-                else
-                    colors.add(st.nextToken());
+    public Config() {
+        String s;
+        String path = System.getProperty("user.dir"); //gets current working path
+        File file = new File(path + "\\src\\com\\config.txt");
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            while ((s = br.readLine()) != null) {
+                if (!(s.contains("//"))) { //checks for comment line, skips it if present
+                    StringTokenizer st = new StringTokenizer(s, "= ");
+                    st.nextToken(); //discards token preceding delim
+                    if (params.size() < 7)
+                        params.add(Integer.parseInt(st.nextToken()));
+                    else
+                        colors.add(st.nextToken());
+                }
             }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -49,15 +53,16 @@ public class Config {
             case "BLUE" : return Color.BLUE;
             case "CYAN" : return Color.CYAN;
             case "GRAY" : return Color.GRAY;
-            case "DARKGRAY" : return Color.DARK_GRAY;
-            case "DARK_GRAY" : return Color.DARK_GRAY;
+            case "DARKGRAY" :
+            case "DARK_GRAY" :
+                return Color.DARK_GRAY;
             case "PINK" : return Color.PINK;
             case "MAGENTA" : return Color.MAGENTA;
             case "YELLOW" : return Color.YELLOW;
             case "ORANGE" : return Color.ORANGE;
             case "BLACK" : return Color.BLACK;
             case "WHITE" : return Color.WHITE;
-            default: System.out.println("Color in config file not recognized"); System.exit(1); break;
+            default: System.out.println("ERROR: Color in config file not recognized"); System.exit(1); break;
         }
         return null;
     }

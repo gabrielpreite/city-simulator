@@ -6,9 +6,10 @@ ROAD_PERCENT = 100
 ROAD_EXT_PERCENT = 90
 FRAME_X = 800
 FRAME_Y = 800
-//Color pool is the same as Color class,no underscores
+//Color pool is the same as Color class
 COL_EMPTY = GREEN
 COL_ROAD = GRAY
 COL_HOUSE = WHITE
 COL_SCHOOL = BLUE
 COL_LEISURE = YELLOW
+//You can place a comment line anywhere in the file if needed
